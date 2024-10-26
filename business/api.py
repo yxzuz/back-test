@@ -22,5 +22,7 @@ def my_business(request):
 
 @router.get("all-customers-entries/", response=list[EntrySchema])
 def get_all_entries(request):
+    if request.user.is_anonymous:
+        return Entry.objects.all()
     entries = Entry.objects.filter(business__user=request.user)
     return entries

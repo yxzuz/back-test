@@ -23,7 +23,7 @@ class QueueSchema(ModelSchema):
 class EntrySchema(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
-    queue: QueueSchema     # ForeignKey to Queue
+    queue:QueueSchema     # ForeignKey to Queue
     business: BusinessSchema  # ForeignKey to Business (optional)
     tracking_code: Optional[str]
     time_in: datetime            # Time in (auto-populated)
