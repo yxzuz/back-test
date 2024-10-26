@@ -23,6 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', api.urls),
     path('customer/', include('customer.urls')),
-    # path('business/', include('business.urls')),
-    # path('', RedirectView.as_view(url='customer/', permanent=False)),
+    path('business/', include('business.urls')),
+    path('', RedirectView.as_view(url='customer/', permanent=False)),
 ]

@@ -5,29 +5,27 @@ from .models import Business, Queue, User, Entry
 # from pydantic import EmailStr
 
 
-
 class BusinessSchema(ModelSchema):
     class Meta:
         model = Business
         fields = ('user', 'name')
 
-    
+
 class QueueSchema(ModelSchema):
-    alphabet: str = "A"
-    estimated_time: int = None
-    
+    # alphabet: str = "A"
+    # estimated_time: int = None
+
     class Meta:
         model = Queue
-        fields = ('business', 'name', 'alphabet', 'estimated_time')
-        
+        fields = ('name',)
+
 
 class EntrySchema(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
-    queue_id: Optional[int]     # ForeignKey to Queue (optional)
+    queue: QueueSchema     # ForeignKey to Queue
     business: BusinessSchema  # ForeignKey to Business (optional)
-    tracking_code: Optional[str] 
+    tracking_code: Optional[str]
     time_in: datetime            # Time in (auto-populated)
-    time_out: Optional[datetime] # Time out (optional)
-    status: str = "waiting"   
-    
+    time_out: Optional[datetime]  # Time out (optional)
+    status: str = "waiting"
