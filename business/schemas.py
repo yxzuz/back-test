@@ -11,13 +11,15 @@ class BusinessSchema(ModelSchema):
         fields = ('user', 'name')
 
 
-class QueueSchema(ModelSchema):
+# class QueueSchema(ModelSchema):
     # alphabet: str = "A"
     # estimated_time: int = None
 
-    class Meta:
-        model = Queue
-        fields = ('name',)
+    # class Meta:
+    #     model = Queue
+    #     fields = ('name',)
+class QueueSchema(Schema):
+    name: str
 
 
 class EntrySchema(Schema):
