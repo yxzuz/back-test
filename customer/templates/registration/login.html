@@ -1,0 +1,34 @@
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'polls/style.css' %}">
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-body">
+        <div class="login-container">
+        <h2>Login</h2>
+            {% if messages %}
+                {% for msg in messages %}
+                    <p class="{{ msg.tags }}">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+            <form method="post" class="login">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button type="submit" id="login">Login</button>
+              <input type="hidden" name="next" value="{{next}}"/>
+             </form>
+             {# If you have a sign-up page, then add a link here #}
+            </div>
+    </div>
+</body>
+</html>

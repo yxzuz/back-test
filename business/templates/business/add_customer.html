@@ -1,0 +1,78 @@
+{% extends 'business/base.html' %}
+
+{% block content %}
+<style>
+    .custom-form {
+        background-color: #f8f9fa;
+        font-size: 1.5rem;
+    }
+
+    .custom-button {
+        background-color: #9AD0C2;
+        color: white;
+        font-size: 1.5rem;
+        padding: 1rem;
+    }
+
+    .custom-button:hover {
+        background-color: #2D9596;
+        color: white;
+    }
+
+    .alert-success {
+        background-color: #ECF4D6;
+        color: #856404;
+        font-size: 1.5rem;
+        padding: 1rem;
+        border: 1px solid #856404;
+        border-radius: 0.25rem;
+    }
+
+    label {
+        font-size: 1.5rem;
+        color: #265073;
+    }
+
+    h1 {
+        color: #265073;
+    }
+
+    select {
+        font-size: 2rem;
+        padding: 2rem;
+        height: auto;
+        min-height: 60px;
+        border-radius: 1rem;
+        border: 1px solid #ced4da;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <h1 class="mb-4 text-center">Add Entry for {{ business.name }}</h1>
+
+            <form method="POST" class="p-4 border rounded custom-form">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="queue" class="form-label">Select Queue:</label>
+                    <select name="queue" id="queue" class="form-select" required>
+                        {% for queue in queues %}
+                            <option value="{{ queue.id }}">{{ queue.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn custom-button w-100">Add Entry</button>
+            </form>
+
+            {% if tracking_code %}
+                <div class="alert alert-success mt-3" role="alert">
+                    Your tracking code: <strong>{{ tracking_code }}</strong>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

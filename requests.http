@@ -1,0 +1,7 @@
+POST http://127.0.0.1:8000/api/customer/home
+Content-Type: application/json
+
+{
+    "tracking_code": "m1222"
+}
+

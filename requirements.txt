@@ -1,0 +1,8 @@
+Django
+django-ninja
+python-decouple
+django-ninja-jwt[crypto]
+dj_database_url
+pydantic[email]
+django-cors-headers
+nanoid  
