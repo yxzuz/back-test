@@ -18,11 +18,19 @@ class BusinessSchema(ModelSchema):
     # class Meta:
     #     model = Queue
     #     fields = ('name',)
+    
 class QueueSchema(Schema):
+    # GET
     name: str
 
+class EntryRetrieveSchema(Schema):
+    # ask for specific entry
+    # GET -> data
+    # WaitListEntryOut
+    id: int
 
-class EntrySchema(Schema):
+
+class EntryDetailSchema(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
     queue:QueueSchema     # ForeignKey to Queue

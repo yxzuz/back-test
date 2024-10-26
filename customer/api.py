@@ -4,7 +4,7 @@ from typing import List, Union
 from .schemas import CustomerQueueListSchema, CustomerQueueCreateSchema
 from .models import Customer, CustomerQueue
 from business.models import Entry
-from business.schemas import EntrySchema
+from business.schemas import EntryDetailSchema
 
 
 router = Router()
@@ -15,7 +15,7 @@ class UserSchema(Schema):
     is_authenticated: bool
 
 
-@router.get("all-customers-entries/", response=list[EntrySchema])
+@router.get("all-customers-entries/", response=list[EntryDetailSchema])
 def get_all_entries(request):
     entries = Entry.objects.all()
     return entries
