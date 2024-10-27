@@ -51,6 +51,7 @@ def cancel_queue(request, entry_id: int):
 # TODO need to test with user enter other people queue (claimed), refacter
 @router.post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
 def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
+    """Add a queue to the customer queue."""
     # Check if the tracking code is valid
     
     try:
