@@ -57,12 +57,20 @@ def get_all_entries(request):
     }
 
 
+
 def serialize_queue_entry(entry_list):
     """Get serialized entry list with number of queue ahead."""
     serialized_entries = []
+    if len(entry_list) == 0:
+        return 
     for entry in entry_list:
-        queue_ahead = entry.get_queue_position()  # Get queue position
-        entry_detail = EntryDetailSchema(
+        entry_detail = serialize_single_entry(entry)
+        serialized_entries.append(entry_detail)
+    return serialized_entries
+
+def serialize_single_entry(entry):
+    queue_ahead = entry.get_queue_position()  # Get queue position
+    entry_detail = EntryDetailSchema(
             id=entry.id,
             name=entry.name,
             queue=entry.queue,
@@ -73,8 +81,8 @@ def serialize_queue_entry(entry_list):
             status=entry.status,
             queue_ahead=queue_ahead
         )
-        serialized_entries.append(entry_detail)
-    return serialized_entries
+    
+    return entry_detail
 
 
 @router.get("{pk}/entry/", response=EntryDetailSchema | None)

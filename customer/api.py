@@ -5,7 +5,7 @@ from typing import List, Union
 from .schemas import CustomerQueueListSchema, CustomerQueueCreateSchema
 from .models import Customer, CustomerQueue
 from business.models import Entry
-from business.api import serialize_queue_entry
+from business.api import serialize_queue_entry, serialize_single_entry
 from business.schemas import EntryDetailSchema
 
 
@@ -49,49 +49,36 @@ def cancel_queue(request, entry_id: int):
 
 
 # TODO need to test with user enter other people queue (claimed), refacter
-@router.post("home", response=list[CustomerQueueListSchema])
+@router.post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
 def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
-    track_code_value = tracking_code.tracking_code
-    my_entry = Entry.objects.get(tracking_code=str(track_code_value))
     # Check if the tracking code is valid
+    
     try:
-        my_entry = Entry.objects.get(tracking_code=str(track_code_value))
+        my_entry = Entry.objects.get(tracking_code=tracking_code.tracking_code)
     except Entry.DoesNotExist:
-        return {"error": "Invalid track code"}
-
-    customer_queues = CustomerQueue.objects.filter(
-        entry__tracking_code=track_code_value)
+        return {"msg": "Invalid track code"}
 
     if request.user.is_anonymous:
         # Return the entries associated with the tracking code for unauthenticated users
-        return [
-            CustomerQueueListSchema(
-                customer=queue.customer.user.username,
-                track_code=queue.entry.tracking_code
-            )
-            for queue in customer_queues
-        ]
+        return [serialize_single_entry(my_entry)]
 
+    try:
+        my_customer = Customer.objects.get(user=request.user)
+    except Customer.DoesNotExist:
+        return {"msg": "You are not a customer"}
     # Proceed with creating or getting the customer queue for authenticated users
     try:
         my_queue = CustomerQueue.objects.get(
             entry=my_entry, customer__user=request.user)
     except CustomerQueue.DoesNotExist:
-        my_customer = Customer.objects.get(user=request.user)
-        my_queue = CustomerQueue.objects.create(
+        CustomerQueue.objects.create(
             customer=my_customer, entry=my_entry)
 
-    # Fetch the queues for the authenticated user
-    customer_queues = CustomerQueue.objects.filter(customer__user=request.user)
 
-    # Serialize the queryset
-    return [
-        CustomerQueueListSchema(
-            customer=queue.customer.user.username,
-            track_code=queue.entry.tracking_code
-        )
-        for queue in customer_queues
-    ]
+    # customer_queues = CustomerQueue.objects.filter(customer__user=request.user)
+    # print(customer_queues)
+    # can retreive the entries from the link api/customer/all-my-entries/
+    return {'msg': 'successfully add this queue'}
 
 
 @router.get("all-my-entries/", response=list[EntryDetailSchema])
