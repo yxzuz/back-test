@@ -119,7 +119,7 @@ def run_queue(request, pk: int):
     return {'msg': f'{entry.name} marked as completed.'}
 
 
-@router.put("{pk}/editQueue/")  # TODO what is this
+@router.put("editQueue/{pk}")  # TODO what is this
 def edit_queue(request, pk: int, edit_attrs: EditIn):
     """
     Edit queue to the specified business.
@@ -131,6 +131,9 @@ def edit_queue(request, pk: int, edit_attrs: EditIn):
     Returns:
 
     """
+    print(request.user)
+    if not request.user.is_authenticated:
+        return {'msg': 'User not authenticated.'}
     business = Business.objects.get(user=request.user)
     try:
         queue = Queue.objects.get(pk=pk, business=business)
