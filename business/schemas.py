@@ -40,6 +40,6 @@ class EntryDetailSchema(Schema):
     queue:QueueSchema     # ForeignKey to Queue
     business: BusinessSchema  # ForeignKey to Business (optional)
     tracking_code: Optional[str]
-    time_in: datetime            # Time in (auto-populated)
+    time_in: datetime             # Time in (auto-populated)
     time_out: Optional[datetime]  # Time out (optional)
     status: str = "waiting"
