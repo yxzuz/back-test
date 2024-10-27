@@ -18,6 +18,10 @@ class BusinessSchema(ModelSchema):
     # class Meta:
     #     model = Queue
     #     fields = ('name',)
+
+class QueueDetailSchema(Schema):
+    id: int
+    name: str
     
 class QueueSchema(Schema):
     # GET

@@ -1,10 +1,12 @@
+import helpers
+from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
 from django.utils import timezone
 from typing import List, Union
 from customer.schemas import CustomerQueueListSchema, CustomerQueueCreateSchema
 from customer.models import Customer, CustomerQueue
 from .models import Entry, Business, Queue
-from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema
+from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema, QueueDetailSchema
 from ninja_jwt.authentication import JWTAuth
 
 
@@ -14,6 +16,22 @@ router = Router()
 class UserSchema(Schema):
     username: str
     is_authenticated: bool
+
+
+@router.get("queue/", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+def list_business_queue(request):
+    # return Queue.objects.all()
+    business = Business.objects.get(user=request.user)
+    queue_list = Queue.objects.filter(business=business)
+    return queue_list
+
+
+@router.get("get_entry/{queue_id}", response=List[EntryDetailSchema], auth=helpers.api_auth_user_required)
+def list_waiting_entry_in_queue(request, queue_id:int):
+    today = timezone.now().date()
+    queue = get_object_or_404(Queue, business__user=request.user, pk=queue_id)
+    entry = Entry.objects.filter(queue=queue, status='waiting', time_in__date=today).order_by("time_in")
+    return entry
 
 
 # TODO add , auth=JWTAuth()
@@ -82,3 +100,14 @@ def run_queue(request, pk: int):
     entry.mark_as_completed()
     return {'msg': f'{entry.name} marked as completed.'}
 
+
+@router.post("add_entry/{queue_id}", auth=helpers.api_auth_user_required)
+def add_entry(request, queue_id: int):
+    business = Business.objects.get(user=request.user)
+    try:
+        queue = Queue.objects.get(business=business, pk=queue_id)
+    except Queue.DoesNotExist:
+        return {'msg': 'This queue does not exist'}
+
+    new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
+    return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
