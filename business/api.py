@@ -61,6 +61,8 @@ def serialize_queue_entry(entry_list):
     """Get serialized entry list with number of queue ahead."""
     serialized_entries = []
     if len(entry_list) == 0:
+        return []
+    if len(entry_list) == 1:
         return serialize_single_entry(entry_list)
     for entry in entry_list:
         entry_detail = serialize_single_entry(entry)
