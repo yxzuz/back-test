@@ -18,12 +18,13 @@ class BusinessSchema(ModelSchema):
     # class Meta:
     #     model = Queue
     #     fields = ('name',)
-    
+
 class QueueSchema(Schema):
     # GET
     id: int
     name: str
     estimated_time: int = None
+
 
 class EntryRetrieveSchema(Schema):
     # ask for specific entry
@@ -35,7 +36,7 @@ class EntryRetrieveSchema(Schema):
 class EntryDetailSchema(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
-    queue:QueueSchema     # ForeignKey to Queue
+    queue: QueueSchema     # ForeignKey to Queue
     # business: BusinessSchema  # ForeignKey to Business (optional)
     business: str
     tracking_code: Optional[str]
@@ -43,3 +44,8 @@ class EntryDetailSchema(Schema):
     time_out: Optional[datetime]  # Time out (optional)
     status: str = "waiting"
     queue_ahead: int
+
+
+class EditIn(Schema):
+    name: str
+    alphabet: str

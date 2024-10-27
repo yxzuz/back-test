@@ -18,4 +18,5 @@ class CustomerQueueListSchema(Schema):
 class CustomerQueueCreateSchema(Schema):
     tracking_code: str 
 
+
     

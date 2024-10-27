@@ -2,7 +2,7 @@ from ninja import Router, Schema
 from django.utils import timezone
 from typing import List, Union
 from .models import Entry, Business, Queue, QueueForm
-from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema
+from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema, EditIn
 from ninja_jwt.authentication import JWTAuth
 
 
@@ -119,8 +119,8 @@ def run_queue(request, pk: int):
     return {'msg': f'{entry.name} marked as completed.'}
 
 
-@router.post("{pk}/editQueue/")  # TODO what is this
-def edit_queue(request, pk: int):
+@router.put("{pk}/editQueue/")  # TODO what is this
+def edit_queue(request, pk: int, edit_attrs: EditIn):
     """
     Edit queue to the specified business.
 
@@ -136,11 +136,14 @@ def edit_queue(request, pk: int):
         queue = Queue.objects.get(pk=pk, business=business)
     except Queue.DoesNotExist:
         return {'msg': 'Cannot edit this queue.'}
-
-    form = QueueForm(request.POST, instance=queue)
-    if form.is_valid():
-        queue_form = form.save(commit=False)
-        queue_form.business = business
-        queue_form.save()
-        return {'msg': f"Successfully updated the queue '{queue.name}' "
-                f"with the alphabet '{queue.alphabet}'."}
+    
+    for attr, value in edit_attrs.dict().items():
+        setattr(queue, attr, value)
+    queue.save()
+    # form = QueueForm(request.POST, instance=queue)
+    # if form.is_valid():
+    #     queue_form = form.save(commit=False)
+    #     queue_form.business = business
+    #     queue_form.save()
+    return {'msg': f"Successfully updated the queue '{queue.name}' "
+            f"with the alphabet '{queue.alphabet}'."}
