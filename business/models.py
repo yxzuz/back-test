@@ -10,16 +10,23 @@ from django.forms import ModelForm
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
 
 class SignUpForm(UserCreationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
-    business_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control"}))
+    email = forms.CharField(widget=forms.EmailInput(
+        attrs={"class": "form-control"}))
+    business_name = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control"}))
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
     class Meta:
         model = User
@@ -37,7 +44,7 @@ class SignUpForm(UserCreationForm):
 
 class Business(models.Model):
     """Business model to keep track of business owners' information."""
-  
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
@@ -78,7 +85,8 @@ class Entry(models.Model):
     name = models.CharField(max_length=50)
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE, null=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True)
-    tracking_code = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    tracking_code = models.CharField(
+        max_length=50, unique=True, null=True, blank=True)
     time_in = models.DateTimeField(default=timezone.now)
     time_out = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, default="waiting")
@@ -98,7 +106,8 @@ class Entry(models.Model):
         if not self.name:
             today = timezone.now().date()
             queue_entries_today = (
-                Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
+                Entry.objects.filter(
+                    queue=self.queue, time_in__date=today).count() + 1
             )
             self.name = f"{self.queue.alphabet}{queue_entries_today}"
 
@@ -116,11 +125,15 @@ class Entry(models.Model):
         Return:
             int: The number of entries ahead of this one in the queue.
         """
+        today = timezone.now().date()
+        if self.status != "waiting":
+            return 0
         return Entry.objects.filter(
             queue=self.queue,
             business=self.business,
             time_in__lt=self.time_in,
             status="waiting",
+            time_in__date=today
         ).count()
 
     def is_waiting(self):
@@ -135,4 +148,3 @@ class QueueForm(ModelForm):
     class Meta:
         model = Queue
         fields = ["name", "alphabet"]
-

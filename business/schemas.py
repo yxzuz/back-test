@@ -21,7 +21,9 @@ class BusinessSchema(ModelSchema):
     
 class QueueSchema(Schema):
     # GET
+    id: int
     name: str
+    estimated_time: int = None
 
 class EntryRetrieveSchema(Schema):
     # ask for specific entry
@@ -34,8 +36,10 @@ class EntryDetailSchema(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
     queue:QueueSchema     # ForeignKey to Queue
-    business: BusinessSchema  # ForeignKey to Business (optional)
+    # business: BusinessSchema  # ForeignKey to Business (optional)
+    business: str
     tracking_code: Optional[str]
     time_in: datetime            # Time in (auto-populated)
     time_out: Optional[datetime]  # Time out (optional)
     status: str = "waiting"
+    queue_ahead: int
