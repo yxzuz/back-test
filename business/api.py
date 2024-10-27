@@ -91,7 +91,7 @@ def get_entry(request, pk: int):
         entry = Entry.objects.get(pk=pk)
     except Entry.DoesNotExist:
         return None
-    return entry
+    return serialize_single_entry(entry)
 
 
 @router.post("{pk}/runQueue")
