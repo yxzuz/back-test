@@ -20,6 +20,7 @@ class UserSchema(Schema):
 @router.get("all-customers-entries/", response=list[EntryDetailSchema])
 def get_all_entries(request):
     """Show every entries."""
+    print(request.user)
     today = timezone.now().date()
     entry_list = Entry.objects.filter(
     time_in__date=today).order_by("time_in")
