@@ -119,7 +119,7 @@ def run_queue(request, pk: int):
     return {'msg': f'{entry.name} marked as completed.'}
 
 
-@router.put("editQueue/{pk}")  # TODO what is this
+@router.put("editQueue/{pk}")
 def edit_queue(request, pk: int, edit_attrs: EditIn):
     """
     Edit queue to the specified business.
@@ -143,10 +143,5 @@ def edit_queue(request, pk: int, edit_attrs: EditIn):
     for attr, value in edit_attrs.dict().items():
         setattr(queue, attr, value)
     queue.save()
-    # form = QueueForm(request.POST, instance=queue)
-    # if form.is_valid():
-    #     queue_form = form.save(commit=False)
-    #     queue_form.business = business
-    #     queue_form.save()
     return {'msg': f"Successfully updated the queue '{queue.name}' "
             f"with the alphabet '{queue.alphabet}'."}

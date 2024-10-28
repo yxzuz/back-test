@@ -12,10 +12,6 @@ from business.schemas import EntryDetailSchema
 router = Router()
 
 
-class UserSchema(Schema):
-    username: str
-    is_authenticated: bool
-
 
 @router.get("all-customers-entries/", response=list[EntryDetailSchema])
 def get_all_entries(request):
@@ -71,16 +67,17 @@ def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
     # Proceed with creating or getting the customer queue for authenticated users
     try:
         my_queue = CustomerQueue.objects.get(
-            entry=my_entry, customer__user=request.user)
+            entry=my_entry)
+        if my_queue.customer.user != request.user:
+            return {'msg': 'You cannot access someone else entry!'}
     except CustomerQueue.DoesNotExist:
         CustomerQueue.objects.create(
             customer=my_customer, entry=my_entry)
-
-
-    # customer_queues = CustomerQueue.objects.filter(customer__user=request.user)
-    # print(customer_queues)
+        return {'msg': 'Successfully add this queue'}
+    
     # can retreive the entries from the link api/customer/all-my-entries/
-    return {'msg': 'successfully add this queue'}
+    return {'msg': 'Failed adding this queue'}
+ 
 
 
 @router.get("all-my-entries/", response=list[EntryDetailSchema])
@@ -100,7 +97,3 @@ def get_customer_queue_list(request):
     ans = serialize_queue_entry(entry_list)
     return ans
 
-
-@router.get("me/", response=UserSchema)
-def me(request):
-    return request.user  # will turn into schema
