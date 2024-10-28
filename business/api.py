@@ -5,8 +5,8 @@ from django.utils import timezone
 from typing import List, Union
 from customer.schemas import CustomerQueueListSchema, CustomerQueueCreateSchema
 from customer.models import Customer, CustomerQueue
-from .models import Entry, Business, Queue
-from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema, QueueDetailSchema
+from .models import Entry, Business, Queue, QueueForm
+from .schemas import EntryRetrieveSchema, BusinessSchema, QueueSchema, EntryDetailSchema, QueueDetailSchema, EditIn, QueueCreateSchema
 from ninja_jwt.authentication import JWTAuth
 
 
@@ -87,7 +87,7 @@ def get_entry(request, pk: int):
         return None
     return entry
 
-@router.post("{pk}/runQueue")
+@router.post("runQueue/{pk}", auth=helpers.api_auth_user_required)
 def run_queue(request, pk: int):
     """Delete entry"""
     print(request.user)
@@ -111,3 +111,41 @@ def add_entry(request, queue_id: int):
 
     new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
     return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
+
+
+@router.put("editQueue/{pk}", auth=helpers.api_auth_user_required)  # TODO what is this
+def edit_queue(request, pk: int, edit_attrs: EditIn):
+    """
+    Edit queue to the specified business.
+
+    Args:
+        request: The HTTP request object.
+        pk: The primary key of the queue.
+
+    Returns:
+
+    """
+    print(request.user)
+    business = Business.objects.get(user=request.user)
+    try:
+        queue = Queue.objects.get(pk=pk, business=business)
+    except Queue.DoesNotExist:
+        return {'msg': 'Cannot edit this queue.'}
+    
+    for attr, value in edit_attrs.dict().items():
+        setattr(queue, attr, value)
+    queue.save()
+    return {'msg': f"Successfully updated the queue '{queue.name}' "
+            f"with the alphabet '{queue.alphabet}'."}
+
+
+@router.post("queue/", response=dict, auth=helpers.api_auth_user_required)
+def create_business_queue(request, data:QueueCreateSchema):
+    data_dict = data.dict()
+    business = Business.objects.get(user=request.user)
+    all_alphabet = Queue.objects.filter(business=business).values_list('alphabet', flat=True)
+    if data_dict['alphabet'] in all_alphabet:
+        return {'msg': 'This alphabet has been used.'}
+    new_queue = Queue.objects.create(business=business, **data_dict)
+    new_queue.save()
+    return {'msg': f'Queue {new_queue.name} is successfully created.'}

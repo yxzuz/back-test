@@ -43,3 +43,13 @@ class EntryDetailSchema(Schema):
     time_in: datetime             # Time in (auto-populated)
     time_out: Optional[datetime]  # Time out (optional)
     status: str = "waiting"
+
+
+class EditIn(Schema):
+    name: str
+    alphabet: str
+
+
+class QueueCreateSchema(Schema):
+    name: str
+    alphabet: str
