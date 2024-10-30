@@ -11,14 +11,6 @@ class BusinessSchema(ModelSchema):
         fields = ('user', 'name')
 
 
-# class QueueSchema(ModelSchema):
-    # alphabet: str = "A"
-    # estimated_time: int = None
-
-    # class Meta:
-    #     model = Queue
-    #     fields = ('name',)
-
 class QueueDetailSchema(Schema):
     id: int
     name: str
